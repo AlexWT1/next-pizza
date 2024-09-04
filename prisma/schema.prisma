@@ -16,6 +16,7 @@ model User {
 
     password String
     cart     Cart[]
+    orders   Order[]
 
     createdAt DateTime @default(now())
     updateUt  DateTime @default(now())
@@ -57,9 +58,10 @@ model ProductItem {
     product   Product @relation(fields: [productId], references: [id])
     productId Int
 
-    createdAt DateTime   @default(now())
-    updateUt  DateTime   @default(now())
-    CartItem  CartItem[]
+    cartItems CartItem[]
+
+    createdAt DateTime @default(now())
+    updateUt  DateTime @default(now())
 }
 
 model Ingredient {
@@ -69,7 +71,8 @@ model Ingredient {
     price    Int
     imageUrl String
 
-    products Product[]
+    products  Product[]
+    cartItems CartItem[]
 
     createdAt DateTime @default(now())
     updateUt  DateTime @default(now())
@@ -84,9 +87,10 @@ model Cart {
     token       String
     totalAmount Int    @default(0)
 
-    createdAt DateTime   @default(now())
-    updateUt  DateTime   @default(now())
-    CartItem  CartItem[]
+    items CartItem[]
+
+    createdAt DateTime @default(now())
+    updateUt  DateTime @default(now())
 }
 
 model CartItem {
@@ -98,10 +102,40 @@ model CartItem {
     cart   Cart @relation(fields: [cartId], references: [id])
     cartId Int
 
-    quantity   Int
-    prizzaSize Int?
-    pizzaType  Int?
+    quantity Int
+
+    ingredients Ingredient[]
 
     createdAt DateTime @default(now())
     updateUt  DateTime @default(now())
+}
+
+model Order {
+    id Int @id @default(autoincrement())
+
+    user   User? @relation(fields: [userId], references: [id])
+    userId Int?
+
+    token String
+
+    totalAmount Int
+    status      OrderStatus
+    paymentId   String?
+
+    items Json
+
+    fullName String
+    email    String
+    phone    String
+    address  String
+    comment  String?
+
+    createdAt DateTime @default(now())
+    updateUt  DateTime @default(now())
+}
+
+enum OrderStatus {
+    PENDING
+    SUCCEEDED
+    CANCELED
 }
