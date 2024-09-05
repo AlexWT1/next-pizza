@@ -12,11 +12,16 @@ model User {
     id Int @id @default(autoincrement())
 
     fullName String
-    email    String @unique
-
+    email    String   @unique
     password String
-    cart     Cart[]
-    orders   Order[]
+    role     UserRole @default(USER)
+
+    provider   String?
+    providerId String?
+
+    cart             Cart?
+    orders           Order[]
+    verificationCode VerificationCode?
 
     createdAt DateTime @default(now())
     updateUt  DateTime @default(now())
@@ -82,7 +87,7 @@ model Cart {
     id Int @id @default(autoincrement())
 
     user   User? @relation(fields: [userId], references: [id])
-    userId Int
+    userId Int?  @unique
 
     token       String
     totalAmount Int    @default(0)
@@ -134,8 +139,25 @@ model Order {
     updateUt  DateTime @default(now())
 }
 
+model VerificationCode {
+    id Int @id @default(autoincrement())
+
+    user   User @relation(fields: [userId], references: [id])
+    userId Int  @unique
+
+    code    String   @unique
+    creatAt DateTime @default(now())
+
+    @@unique([userId, code])
+}
+
 enum OrderStatus {
     PENDING
     SUCCEEDED
     CANCELED
+}
+
+enum UserRole {
+    USER
+    ADMIN
 }
