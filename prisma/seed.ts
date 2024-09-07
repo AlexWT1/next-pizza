@@ -132,12 +132,40 @@ async function up() {
       generateProductItem({ productId: 17 }),
     ],
   });
+
+  await prisma.cart.createMany({
+    data: [
+      {
+        userId: 1,
+        totalAmount: 0,
+        token: "111111",
+      },
+      {
+        userId: 2,
+        totalAmount: 0,
+        token: "222222",
+      },
+    ],
+  });
+
+  await prisma.cartItem.create({
+    data: {
+      productItemId: 1,
+      cartId: 1,
+      quantity: 2,
+      ingredients: {
+        connect: [{ id: 1 }, { id: 2 }, { id: 3 }],
+      },
+    },
+  });
 }
 
 async function down() {
   await prisma.$executeRaw`TRUNCATE Table "User" RESTART IDENTITY CASCADE`;
   await prisma.$executeRaw`TRUNCATE Table "Category" RESTART IDENTITY CASCADE`;
   await prisma.$executeRaw`TRUNCATE Table "Ingredient" RESTART IDENTITY CASCADE`;
+  await prisma.$executeRaw`TRUNCATE Table "Cart" RESTART IDENTITY CASCADE`;
+  await prisma.$executeRaw`TRUNCATE Table "CartItem" RESTART IDENTITY CASCADE`;
   await prisma.$executeRaw`TRUNCATE Table "Product" RESTART IDENTITY CASCADE`;
   await prisma.$executeRaw`TRUNCATE Table "ProductItem" RESTART IDENTITY CASCADE`;
 }
