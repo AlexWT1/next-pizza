@@ -8,6 +8,8 @@ import { CheckboxFiltersGroup } from "../shared";
 
 import { useFilterIngredients } from "@/hooks/useFilterIngredients";
 import { useSet } from "react-use";
+import qs from "qs";
+import { useRouter } from "next/navigation";
 
 interface Props {
   className?: string;
@@ -19,9 +21,14 @@ interface PriceProps {
 }
 
 export const Filters: React.FC<Props> = ({ className }) => {
-  const { ingredients, loading, onAddId, selectedIds } = useFilterIngredients();
+  const router = useRouter();
+  const { ingredients, loading, onAddId, selectedIngredients } =
+    useFilterIngredients();
 
   const [sizes, { toggle: toggleSizes }] = useSet(new Set<string>([]));
+  const [pizzaTypes, { toggle: togglePizzaTypes }] = useSet(
+    new Set<string>([])
+  );
   const [prices, setPrice] = React.useState<PriceProps>({
     priceFrom: 0,
     priceTo: 5000,
@@ -39,11 +46,38 @@ export const Filters: React.FC<Props> = ({ className }) => {
     });
   };
 
+  React.useEffect(() => {
+    const filters = {
+      ...prices,
+      pizzaTypes: Array.from(pizzaTypes),
+      sizes: Array.from(sizes),
+      ingredients: Array.from(selectedIngredients),
+    };
+
+    const query = qs.stringify(filters, {
+      arrayFormat: "comma",
+    });
+
+    router.push(`?${query}`);
+  }, [sizes, pizzaTypes, selectedIngredients, prices]);
+
   return (
     <div className={className}>
       <Title text="Фильтрация" size="sm" className="mb-5 font-bold" />
 
       {/* Верхние чекбоксы */}
+      <CheckboxFiltersGroup
+        title="Тип теста"
+        name="pizzaTypes"
+        className="mb-5"
+        selected={pizzaTypes}
+        onClickCheckbox={togglePizzaTypes}
+        items={[
+          { text: "Тонкое", value: "1" },
+          { text: "Толстое", value: "2" },
+        ]}
+      />
+
       <CheckboxFiltersGroup
         name="sizes"
         className="mb-5"
@@ -98,7 +132,7 @@ export const Filters: React.FC<Props> = ({ className }) => {
         items={items}
         loading={loading}
         onClickCheckbox={onAddId}
-        selected={selectedIds}
+        selected={selectedIngredients}
       />
     </div>
   );

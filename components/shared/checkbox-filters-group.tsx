@@ -31,7 +31,7 @@ export const CheckboxFiltersGroup: React.FC<Props> = ({
   selected,
   name,
 }) => {
-  const [showAll, setShowAll] = React.useState(true);
+  const [showAll, setShowAll] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
 
   const list = showAll
