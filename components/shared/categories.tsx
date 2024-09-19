@@ -12,8 +12,6 @@ interface Props {
 
 export const Categories: React.FC<Props> = ({ items, className }) => {
   const activeId = useCategoryStore((state) => state.activeId);
-
-  console.log(activeId);
   return (
     <div
       className={cn("inline-flex gap-1 bg-gray-50 p-1 rounded-2xl", className)}
